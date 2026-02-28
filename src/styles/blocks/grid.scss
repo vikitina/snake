@@ -1,0 +1,71 @@
+.grid {}
+
+.cell {
+  width: 20px;
+  height: 20px;
+  background-color: var(--field-bg);
+  border: 1px solid transparent;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  gap: 5px;
+
+  &:not(:last-child) {
+    margin-bottom: 3px;
+  }
+
+}
+
+.empty {}
+
+.snake {
+  background: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  &::before {
+    content: "";
+    width: 60%;
+    height: 60%;
+    background-color: rgb(23, 190, 57);
+    transform: rotate(45deg);
+    animation: tail 5s ease infinite;
+  }
+}
+
+.head {
+  background: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &::before {
+    content: "";
+    width: 60%;
+    height: 60%;
+    background-color: red;
+    border-radius: 50%;
+  }
+}
+
+.food {
+  background: violet;
+}
+
+@keyframes tail {
+  0% {
+    transform: rotate(45deg) translateZ(0);
+  }
+
+  50% {
+    transform: rotate(225deg);
+  }
+
+  100% {
+    transform: rotate(405deg);
+  }
+}
