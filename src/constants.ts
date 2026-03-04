@@ -1,16 +1,39 @@
-export const START_SNAKE_SIZE = 11;
+import { buildReverseLookup } from "./utils";
+
+export const START_SNAKE_SIZE = 4;
 
 export const GridSize = {
-  width: 27,
-  height: 27
+  width: 17,
+  height: 17
 };
+
+export const FOOD_TYPES = {
+  DIAMOND: 'diamond',
+  SAPFIRE: 'sapfire',
+  CRISTAL: 'cristal',
+  APPLE: 'apple'
+}
+
+export const FoodPrices = {
+  [FOOD_TYPES.DIAMOND]: 300,
+  [FOOD_TYPES.SAPFIRE]: 200,
+  [FOOD_TYPES.CRISTAL]: 150,
+  [FOOD_TYPES.APPLE]: 50
+}
+
+export const FOOD_LITERAL = 3;
 
 export const CellTypes = {
   empty: 0,
   snake: 1,
   head: 2,
-  food: 3
+  food: {
+    [FOOD_TYPES.DIAMOND]: parseInt(`${FOOD_LITERAL}1`, 10),
+    [FOOD_TYPES.APPLE]: parseInt(`${FOOD_LITERAL}2`, 10),
+  }
 };
+
+export const Foods = buildReverseLookup(CellTypes.food);
 export const Directions = {
   UP: 'up',
   RIGHT: 'right',
@@ -45,3 +68,7 @@ export const GameStates = {
 export const Settings = {
   enable_through_walls: true,
 }
+
+export const MIN_DELAY_FOOD = 0;
+export const MAX_DELAY_FOOD = 5000;
+

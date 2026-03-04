@@ -3,7 +3,9 @@ import { GridSize } from './constants';
 import './styles/style.scss'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div id="field"></div>
+  <div class="container">
+    <div id="field"></div>
+  </div>
 `
 const field = document.querySelector('#field')
 const grid = new Model(GridSize, field);

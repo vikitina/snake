@@ -1,9 +1,13 @@
-import { Arrows, CellTypes, DEFAULT_DIRECTION, Directions, DisallowedRotationSequences, INTERVAL, START_SNAKE_SIZE } from "../../constants";
-import { Game } from "../../game/game";
-import { Snake } from "../../snake/snake";
+import { Arrows, CellTypes, DEFAULT_DIRECTION, Directions, DisallowedRotationSequences, Foods, INTERVAL, START_SNAKE_SIZE } from "../../constants";
+import { Game } from "../game/game";
+import { Snake } from "../snake/snake";
 import type { DirectionsValue, TGrid } from "../../types";
 import { Cell } from "../cell/cell";
 import { Road } from "../road/road";
+import { Diamond } from "../food/diamond";
+import type { Food } from "../food/food";
+import { Score } from "../score/score";
+import { Apple } from "../food/apple";
 
 
 export class Model {
@@ -15,29 +19,35 @@ export class Model {
   direction: typeof Directions[keyof typeof Directions];
   road: Road;
   game: Game;
+  foods: Food[];
+  score: Score;
 
   constructor({ width, height }: TGrid, field: HTMLDivElement) {
     this.gridSize = { width, height };
     this.container = field;
     this.direction = DEFAULT_DIRECTION;
     this.game = new Game();
-    this.snake = new Snake(this.gridSize, START_SNAKE_SIZE, this.game);
+    this.grid = this.createGrid();
+    this.score = new Score();
+    this.snake = new Snake(this.gridSize, START_SNAKE_SIZE, this.game, this.grid, this.commitFoodConsumption);
     this.road = new Road(this.snake);
     this.road.init(this.direction);
-    this.grid = this.createGrid();
+
+    this.foods = [new Diamond(this.snake, this.grid), new Apple(this.snake, this.grid)];
     Model.activeInstance = this;
   }
 
   private intervalId?: number;
 
   init() {
-    this.setSnakeOnGrid();
-    // this.consoleGrid();
+    this.snake.setSnakeOnGrid();
+    this.setFoodOnGrid();
     this.render();
     this.startMoving();
+    this.score.init(this.container);
+    this.foods.forEach((food) => food.init());
 
     document.addEventListener('keydown', ({ key }) => {
-      console.log(key)
       const arrows = Object.keys(Arrows);
       if (arrows.includes(key)) {
         if (this.isAllowRotate(this.direction, Arrows[key])) {
@@ -46,14 +56,22 @@ export class Model {
 
           //показать ошибку/
         }
-
-
       }
       if (key === ' ') {
         // Model.stopMoving();
         this.move();
       }
     })
+  }
+
+  removeFood(id: number) {
+    this.foods.find((food) => food.id === id)?.removeFood();
+  }
+
+  commitFoodConsumption = (foodType: string, id: number) =>{
+    this.removeFood(id);
+    this.score.increaseScore(foodType );
+    // this.road.updateRoadAfterEating();
   }
 
   isAllowRotate = (direction1: DirectionsValue, direction2: DirectionsValue) => DisallowedRotationSequences
@@ -82,12 +100,11 @@ export class Model {
     this.container.append(Cell.render(this.grid))
   }
 
-  setSnakeOnGrid() {
-    const { head, tail } = this.snake.position;
-    this.grid[head.y][head.x].type = CellTypes.head;
-    tail.forEach(({ x, y }) => {
-      this.grid[y][x].type = CellTypes.snake;
-    });
+  setFoodOnGrid() {
+    this.foods = this.foods.map((food) => {
+      food.setFoodOnGrid();
+      return food;
+    })
   }
 
   consoleGrid() {
@@ -101,7 +118,8 @@ export class Model {
     this.snake.position = this.road.road;
 
     this.reset();
-    this.setSnakeOnGrid();
+    this.snake.setSnakeOnGrid();
+    this.setFoodOnGrid();
     this.render();
     this.road.tick();
   };

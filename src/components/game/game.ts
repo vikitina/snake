@@ -1,5 +1,5 @@
-import { GameStates, Settings } from "../constants";
-import type { GameStateValue } from "../types";
+import { GameStates, Settings } from "../../constants";
+import type { GameStateValue } from "../../types";
 
 type SettingsType = typeof Settings;
 
@@ -25,4 +25,5 @@ export class Game {
   get settings(): SettingsType {
     return this._settings;
   }
+
 }

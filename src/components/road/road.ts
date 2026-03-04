@@ -1,9 +1,5 @@
-// import type { Directions } from "../../constants";
 import type { Snake } from "../../snake/snake";
 import type { DirectionsValue, RoadItem } from "../../types";
-import { Model } from "../model/model";
-
-
 
 export class Road {
   _road: RoadItem[] = [];
@@ -24,7 +20,7 @@ export class Road {
   }
 
   changeDirection(direction: DirectionsValue) {
-
+console.log('!!!!!!!! ', this.snake.snakeLength)
     const lastIndex = this._road.length - 1;
     const prevDirection = this.getDirection(this._road[lastIndex]);
 
@@ -44,12 +40,26 @@ export class Road {
     }
   }
 
+  updateRoadAfterEating() {
+    console.log('road before ', this._road)
+
+    const newRoad: RoadItem[] = this._road.map((item) => {
+      const direction = this.getDirection(item);
+      if (item[direction]?.length) {
+        item[direction]?.push(item[direction][item[direction].length - 1] + 1);
+      }
+      return item;
+    })
+    this._road = newRoad;
+    console.log('road after ', this._road)
+  }
+
   get road() {
     return [...this._road];
   }
 
   getDirection(way: RoadItem) {
-    return Object.keys(way)[0]
+    return Object.keys(way)[0];
   }
 
   tick() {

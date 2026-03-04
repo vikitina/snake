@@ -1,5 +1,4 @@
-import { CellTypes } from "../../constants";
-import type { TGrid } from "../../types";
+import { CellTypes, FOOD_LITERAL } from "../../constants";
 
 const cellClasses = Object.keys(CellTypes)
 
@@ -7,11 +6,15 @@ export class Cell {
   x: number;
   y: number;
   private _type: number;
+  id: number;
+
+  private static _nextId = 1;
 
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
     this._type = CellTypes.empty;
+    this.id = Cell._nextId++;
   }
 
   get type(): number {
@@ -28,10 +31,16 @@ export class Cell {
     grid.forEach((row) => {
       const rowNode = document.createElement('div')
       rowNode.classList.add('row')
-      row.forEach((cell) => { 
+      row.forEach((cell) => {
         const newCell = document.createElement('div');
         newCell.classList.add('cell')
-        newCell.classList.add(cellClasses[cell.type]);
+        if (String(cell.type).at(0) === FOOD_LITERAL.toString()) {
+          newCell.classList.add(`food${cell.type}`);
+          newCell.classList.add('food');
+        } else {
+          newCell.classList.add(cellClasses[cell.type]);
+        }
+
         rowNode.append(newCell)
       });
       wrapNode!.append(rowNode)
