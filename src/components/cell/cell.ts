@@ -10,10 +10,10 @@ export class Cell {
 
   private static _nextId = 1;
 
-  constructor(x: number, y: number) {
+  constructor(x: number, y: number, type: number = CellTypes.empty) {
     this.x = x;
     this.y = y;
-    this._type = CellTypes.empty;
+    this._type = type;
     this.id = Cell._nextId++;
   }
 

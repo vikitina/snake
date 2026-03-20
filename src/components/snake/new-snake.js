@@ -1,8 +1,8 @@
 import { Model } from "../model/model";
 import { CellTypes, Directions, Foods } from "../../constants";
 import type { Game } from "../game/game";
-import type { DirectionsValue, Point, TGrid } from "../../types";
-import { Cell } from "../cell/cell";
+import type { DirectionsValue, Point, RoadItem, TGrid } from "../../types";
+import type { Cell } from "../cell/cell";
 
 export class Snake {
 
@@ -44,7 +44,7 @@ export class Snake {
     return { head: this.head, tail: this.tail };
   }
 
-  moveSegment(segment: Point, direction: DirectionsValue) {
+  move(segment: Point, direction: DirectionsValue) {
     switch (direction) {
       case Directions.UP:
         segment.y = segment.y - 1 < 0 ? this.height - 1 : segment.y - 1;
@@ -62,55 +62,13 @@ export class Snake {
     return segment;
   }
 
-  eatFood() {
-    const row = this.grid[this.head.y];
-    const cell = row?.[this.head.x];
-    if (!cell) return;
-
-
-    if (Object.values(CellTypes.food).includes(cell.type)) {
-      console.log('cell.type ', cell.type)
-
-      this.commitFoodConsumption(Foods[String(cell.type)], cell.id);
-      return true;
-    }
-    return false;
-  }
-
-  increaseLength({x, y}: Point) {
-    this._snakeLength++;
-    
-    this.tail = [
-      new Cell(x, y, CellTypes.snake),
-      ...this.tail
-    ]
-  }
-
-  move(d: DirectionsValue) {
-    const prevHead = { ...this.head }
-    this.moveSegment(this.head, d);
-    if (this.eatFood()) {
-      this.increaseLength({ x: prevHead.x, y: prevHead.y });
-    } else {
-      this.tail = this.tail.map((segment, i, t) => {
-        const newSegment = { ...segment }
-        if (i === 0) {
-
-          newSegment.x = prevHead.x;
-          newSegment.y = prevHead.y;
-        } else {
-          newSegment.x = t[i - 1].x;
-          newSegment.y = t[i - 1].y;
-        }
-        return newSegment;
-      });
-    }
-
-  }
-
+  // getDirection(way: RoadItem) {
+  //   const keys = Object.keys(way) as Array<DirectionsValue>;
+  //   return keys[0];
+  // }
 
   isMoveEnable(d: DirectionsValue) {
-    const fantom = this.moveSegment({ ...this.head }, d);
+    const fantom = this.move({ ...this.head }, d);
 
     if (this.tail.some((item) => item.x === fantom.x && item.y === fantom.y)) {
       return false;
@@ -123,12 +81,44 @@ export class Snake {
     return true;
   }
 
+  increaseLength() {
+    console.log('tail before', this.tail)
+    this._snakeLength++;
+    const tail = [...this.tail]
+    const lastSegment = tail[tail.length - 1];
+    const prevLastSegment = tail[tail.length - 2];
+    const totalVector = {
+      x: lastSegment.x - prevLastSegment.x,
+      y: lastSegment.y - prevLastSegment.y
+    }
+    tail.push({
+      x: lastSegment.x + totalVector.x,
+      y: lastSegment.y + totalVector.y
+    })
+    this.tail = [...tail];
+    console.log('tail after ', this.tail)
+  }
 
+  eatFood(d: DirectionsValue) {
+    const fantom: { x: number; y: number } = this.move({ ...this.head }, d);
+    const row = this.grid[fantom.y];
+    const cell = row?.[fantom.x];
+    if (!cell) return;
+
+
+    if (Object.values(CellTypes.food).includes(cell.type)) {
+      console.log('cell.type ', cell.type)
+      // this.increaseLength();
+      this.commitFoodConsumption(Foods[String(cell.type)], cell.id);
+
+    }
+  }
 
   setPosition(d: DirectionsValue) {
 
     if (this.isMoveEnable(d)) {
-      this.move(d);
+      this.eatFood(d);
+      this.move(this.head, d);
     } else {
       Model.stopMoving();
     }

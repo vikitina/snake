@@ -1,15 +1,13 @@
 import { Arrows, CellTypes, DEFAULT_DIRECTION, Directions, DisallowedRotationSequences, INTERVAL, START_SNAKE_SIZE } from "../../constants";
 import { Game } from "../game/game";
 import { Snake } from "../snake/snake";
-import type { DirectionsValue, RoadItem, TGrid } from "../../types";
+import type { DirectionsValue, TGrid } from "../../types";
 import { Cell } from "../cell/cell";
 // import { Road } from "../road/road";
 import { Diamond } from "../food/diamond";
 import type { Food } from "../food/food";
 import { Score } from "../score/score";
 import { Apple } from "../food/apple";
-
-
 
 export class Model {
   static activeInstance: Model | null = null;
