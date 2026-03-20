@@ -71,4 +71,3 @@ export const Settings = {
 
 export const MIN_DELAY_FOOD = 0;
 export const MAX_DELAY_FOOD = 5000;
-

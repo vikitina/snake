@@ -114,11 +114,48 @@ export class Snake {
     }
   }
 
-  setPosition(d: DirectionsValue) {
-
+  setPosition(roadSafe: RoadItem[]) {
+    const road = roadSafe as RoadItem[];
+    const lastAddedIndex = road.length - 1;
+    const lastItem = road[lastAddedIndex] as RoadItem;
+    const d = this.getDirection(lastItem);
     if (this.isMoveEnable(d)) {
       this.eatFood(d);
       this.move(this.head, d);
+
+      if (road.length === 1 && !road[0][d]!.length) {
+
+        this.tail.forEach((item) => {
+          this.move(item, d)
+        })
+      } else {
+        const lastIndex = road.length - 1;
+        this.tail.forEach((c, i) => {
+
+          let k = 0;
+          let flag = true;
+          while (k < lastIndex && flag) {
+            const d = this.getDirection(road[k]);
+            const roadPart = road[k][d] ?? [];
+            const way: number = roadPart[i];
+            if (way > 0) {
+              if (way === 1) {
+                const d = this.getDirection(road[k + 1]);
+                this.move(c, d);
+              } else {
+                const d = this.getDirection(road[k]);
+                this.move(c, d);
+              }
+              flag = false;
+            }
+            if (flag && k === lastIndex - 1) {
+              const d1 = this.getDirection(road[lastIndex]);
+              this.move(c, d1);
+            }
+            k++;
+          }
+        })
+      }
     } else {
       Model.stopMoving();
     }

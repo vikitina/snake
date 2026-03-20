@@ -7,7 +7,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <div id="field"></div>
   </div>
 `
-const field = document.querySelector('#field')
+const field = document.querySelector<HTMLDivElement>('#field')!
 const grid = new Model(GridSize, field);
 
 grid.init();

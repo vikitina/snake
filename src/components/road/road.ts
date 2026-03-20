@@ -1,4 +1,4 @@
-import type { Snake } from "../../snake/snake";
+import type { Snake } from "../snake/snake";
 import type { DirectionsValue, RoadItem } from "../../types";
 
 export class Road {
@@ -20,7 +20,7 @@ export class Road {
   }
 
   changeDirection(direction: DirectionsValue) {
-console.log('!!!!!!!! ', this.snake.snakeLength)
+
     const lastIndex = this._road.length - 1;
     const prevDirection = this.getDirection(this._road[lastIndex]);
 
@@ -59,7 +59,8 @@ console.log('!!!!!!!! ', this.snake.snakeLength)
   }
 
   getDirection(way: RoadItem) {
-    return Object.keys(way)[0];
+    const keys = Object.keys(way) as Array<DirectionsValue>;
+    return keys[0];
   }
 
   tick() {
